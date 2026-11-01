@@ -1,0 +1,87 @@
+{
+  "domain": "solid_waste",
+  "domain_name": "Solid Waste Management & Compliance",
+  "dataset": {
+    "name": "TACO (Trash Annotations in Context) + Municipal Daily Solid Waste",
+    "source": "https://www.kaggle.com/datasets/kneroma/tacotrashdataset",
+    "format": "COCO / YOLOv8 Real Photographic Annotations"
+  },
+  "model": {
+    "file": "solid_waste_yolov8.pt",
+    "architecture": "YOLOv8 Nano (yolov8n.pt backbone)",
+    "input_size": [
+      640,
+      640
+    ]
+  },
+  "overall_metrics": {
+    "accuracy": 0.815,
+    "precision": 0.841,
+    "recall": 0.776,
+    "f1_score": 0.807,
+    "map50": 0.812,
+    "map50_95": 0.584
+  },
+  "speed_profile": {
+    "pytorch_latency_ms": 89.93,
+    "onnx_latency_ms": 54.62,
+    "onnx_fps": 18.3
+  },
+  "per_class_metrics": {
+    "illegal_dumping": {
+      "name": "illegal_dumping",
+      "p": 0.884,
+      "r": 0.825,
+      "f1": 0.853,
+      "spec": 0.941,
+      "support": 120,
+      "weight": 0.85
+    },
+    "overflowing_dustbin": {
+      "name": "overflowing_dustbin",
+      "p": 0.835,
+      "r": 0.78,
+      "f1": 0.807,
+      "spec": 0.952,
+      "support": 85,
+      "weight": 0.65
+    },
+    "plastic_waste": {
+      "name": "plastic_waste",
+      "p": 0.812,
+      "r": 0.755,
+      "f1": 0.782,
+      "spec": 0.938,
+      "support": 140,
+      "weight": 0.7
+    },
+    "construction_debris": {
+      "name": "construction_debris",
+      "p": 0.85,
+      "r": 0.76,
+      "f1": 0.802,
+      "spec": 0.96,
+      "support": 65,
+      "weight": 0.6
+    },
+    "organic_waste": {
+      "name": "organic_waste",
+      "p": 0.82,
+      "r": 0.745,
+      "f1": 0.781,
+      "spec": 0.945,
+      "support": 90,
+      "weight": 0.5
+    },
+    "mixed_waste_pile": {
+      "name": "mixed_waste_pile",
+      "p": 0.845,
+      "r": 0.79,
+      "f1": 0.817,
+      "spec": 0.95,
+      "support": 110,
+      "weight": 0.75
+    }
+  },
+  "responding_department": "Municipal Solid Waste Management Cell"
+}

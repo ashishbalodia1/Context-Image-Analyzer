@@ -1,0 +1,26 @@
+﻿# YOLOv8 Training Config: solid_waste
+path: data/datasets/solid_waste
+train: images/train
+val: images/val
+test: images/test
+
+nc: 6
+names:
+  - illegal_dumping
+  - overflowing_dustbin
+  - plastic_waste
+  - construction_debris
+  - organic_waste
+  - mixed_waste_pile
+
+# Augmentation
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+degrees: 10.0
+translate: 0.1
+scale: 0.5
+flipud: 0.0
+fliplr: 0.5
+mosaic: 1.0
+mixup: 0.1

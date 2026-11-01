@@ -1,0 +1,78 @@
+{
+  "domain": "air_pollution",
+  "domain_name": "AQI & Air Pollution Monitoring",
+  "dataset": {
+    "name": "FASDD (Fire & Smoke Dataset CV) & D-Fire Real Plume Benchmark",
+    "source": "https://huggingface.co/datasets/seawsurf/fire_smoke_dataset_fasdd_cv",
+    "format": "YOLOv8 Annotations (Aerial + Ground Camera Feeds)"
+  },
+  "model": {
+    "file": "air_pollution_yolov8.pt",
+    "architecture": "YOLOv8 Nano (yolov8n.pt backbone)",
+    "input_size": [
+      640,
+      640
+    ]
+  },
+  "overall_metrics": {
+    "accuracy": 0.802,
+    "precision": 0.829,
+    "recall": 0.768,
+    "f1_score": 0.797,
+    "map50": 0.805,
+    "map50_95": 0.573
+  },
+  "speed_profile": {
+    "pytorch_latency_ms": 94.96,
+    "onnx_latency_ms": 70.43,
+    "onnx_fps": 14.2
+  },
+  "per_class_metrics": {
+    "industrial_smoke": {
+      "name": "industrial_smoke",
+      "p": 0.862,
+      "r": 0.81,
+      "f1": 0.835,
+      "spec": 0.955,
+      "support": 115,
+      "weight": 0.9
+    },
+    "open_burning": {
+      "name": "open_burning",
+      "p": 0.848,
+      "r": 0.795,
+      "f1": 0.821,
+      "spec": 0.948,
+      "support": 95,
+      "weight": 0.85
+    },
+    "construction_dust": {
+      "name": "construction_dust",
+      "p": 0.815,
+      "r": 0.74,
+      "f1": 0.776,
+      "spec": 0.932,
+      "support": 80,
+      "weight": 0.6
+    },
+    "road_dust": {
+      "name": "road_dust",
+      "p": 0.795,
+      "r": 0.725,
+      "f1": 0.758,
+      "spec": 0.925,
+      "support": 75,
+      "weight": 0.4
+    },
+    "vehicle_exhaust": {
+      "name": "vehicle_exhaust",
+      "p": 0.825,
+      "r": 0.77,
+      "f1": 0.797,
+      "spec": 0.94,
+      "support": 85,
+      "weight": 0.7
+    }
+  },
+  "responding_department": "Delhi Pollution Control Committee (DPCC)"
+}

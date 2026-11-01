@@ -1,0 +1,45 @@
+{
+  "solid_waste": {
+    "model": "solid_waste_yolov8",
+    "footprint": {
+      "pytorch_mb": 6.18,
+      "onnx_mb": 12.02,
+      "footprint_ratio": 1.95
+    },
+    "latency": {
+      "pytorch_cpu": {
+        "mean_ms": 78.75,
+        "std_ms": 6.36,
+        "p50_ms": 76.49,
+        "p95_ms": 90.84,
+        "fps": 12.7
+      },
+      "onnxruntime_cpu": {
+        "mean_ms": 66.37,
+        "std_ms": 27.59,
+        "p50_ms": 57.49,
+        "p95_ms": 107.47,
+        "fps": 15.1
+      },
+      "speedup_factor": "1.19x"
+    },
+    "numerical_consistency": {
+      "shape_identical": true,
+      "pt_shape": [
+        1,
+        10,
+        8400
+      ],
+      "onnx_shape": [
+        1,
+        10,
+        8400
+      ],
+      "max_absolute_error": 0.001434,
+      "mean_absolute_error": 1.4e-05,
+      "cosine_similarity": 1.0,
+      "consistent": false
+    },
+    "quantized_onnx": "models\\optimized\\solid_waste_yolov8_int8.onnx"
+  }
+}

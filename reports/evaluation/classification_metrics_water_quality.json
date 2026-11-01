@@ -1,0 +1,78 @@
+{
+  "domain": "water_quality",
+  "domain_name": "Water Quality & Surface Pollution Monitoring",
+  "dataset": {
+    "name": "Ocean & River Floating Surface Waste (Kaggle Ocean Waste Benchmark)",
+    "source": "https://www.kaggle.com/datasets/alexeydzhevello/ocean-waste-test-subset",
+    "format": "YOLOv8 Annotations (Riverbanks, Canals & Shorelines)"
+  },
+  "model": {
+    "file": "water_quality_yolov8.pt",
+    "architecture": "YOLOv8 Nano (yolov8n.pt backbone)",
+    "input_size": [
+      640,
+      640
+    ]
+  },
+  "overall_metrics": {
+    "accuracy": 0.784,
+    "precision": 0.815,
+    "recall": 0.742,
+    "f1_score": 0.777,
+    "map50": 0.789,
+    "map50_95": 0.551
+  },
+  "speed_profile": {
+    "pytorch_latency_ms": 94.7,
+    "onnx_latency_ms": 77.49,
+    "onnx_fps": 12.9
+  },
+  "per_class_metrics": {
+    "water_discoloration": {
+      "name": "water_discoloration",
+      "p": 0.83,
+      "r": 0.76,
+      "f1": 0.794,
+      "spec": 0.942,
+      "support": 90,
+      "weight": 0.75
+    },
+    "floating_waste": {
+      "name": "floating_waste",
+      "p": 0.855,
+      "r": 0.79,
+      "f1": 0.821,
+      "spec": 0.95,
+      "support": 130,
+      "weight": 0.7
+    },
+    "oil_film": {
+      "name": "oil_film",
+      "p": 0.79,
+      "r": 0.71,
+      "f1": 0.748,
+      "spec": 0.935,
+      "support": 65,
+      "weight": 0.85
+    },
+    "foam_accumulation": {
+      "name": "foam_accumulation",
+      "p": 0.785,
+      "r": 0.705,
+      "f1": 0.743,
+      "spec": 0.93,
+      "support": 70,
+      "weight": 0.6
+    },
+    "illegal_discharge_pipe": {
+      "name": "illegal_discharge_pipe",
+      "p": 0.815,
+      "r": 0.745,
+      "f1": 0.778,
+      "spec": 0.945,
+      "support": 80,
+      "weight": 0.95
+    }
+  },
+  "responding_department": "Delhi Jal Board / Central Pollution Control Board"
+}

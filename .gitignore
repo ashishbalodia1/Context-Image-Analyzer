@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# ML artifacts
+models/weights/*.pt
+!models/trained/*.pt
+runs/
+*.onnx
+*.tflite
+
+# Data
+data/raw/
+data/processed/
+data/uploads/
+*.zip
+*.tar.gz
+
+# Environment
+.env
+*.env.local
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+dashboard/dist/
+dashboard/build/
+
+# Logs
+logs/
+*.log
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# DB
+*.db
+*.sqlite

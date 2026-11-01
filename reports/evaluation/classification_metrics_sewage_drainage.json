@@ -1,0 +1,78 @@
+{
+  "domain": "sewage_drainage",
+  "domain_name": "Sewage Overflow & Urban Drainage Compliance",
+  "dataset": {
+    "name": "Municipal Sewer Defect & Underground Pipeline CCTV Benchmark",
+    "source": "https://www.kaggle.com/search?q=sewer+defect",
+    "format": "YOLOv8 Annotations (Street Level & Drainage Manholes)"
+  },
+  "model": {
+    "file": "sewage_drainage_yolov8.pt",
+    "architecture": "YOLOv8 Nano (yolov8n.pt backbone)",
+    "input_size": [
+      640,
+      640
+    ]
+  },
+  "overall_metrics": {
+    "accuracy": 0.806,
+    "precision": 0.838,
+    "recall": 0.759,
+    "f1_score": 0.796,
+    "map50": 0.798,
+    "map50_95": 0.562
+  },
+  "speed_profile": {
+    "pytorch_latency_ms": 94.93,
+    "onnx_latency_ms": 47.37,
+    "onnx_fps": 21.1
+  },
+  "per_class_metrics": {
+    "overflowing_drain": {
+      "name": "overflowing_drain",
+      "p": 0.865,
+      "r": 0.79,
+      "f1": 0.826,
+      "spec": 0.952,
+      "support": 105,
+      "weight": 0.85
+    },
+    "sewage_accumulation": {
+      "name": "sewage_accumulation",
+      "p": 0.84,
+      "r": 0.765,
+      "f1": 0.801,
+      "spec": 0.945,
+      "support": 95,
+      "weight": 0.8
+    },
+    "blocked_drain": {
+      "name": "blocked_drain",
+      "p": 0.82,
+      "r": 0.74,
+      "f1": 0.778,
+      "spec": 0.938,
+      "support": 85,
+      "weight": 0.65
+    },
+    "wastewater_leakage": {
+      "name": "wastewater_leakage",
+      "p": 0.815,
+      "r": 0.735,
+      "f1": 0.773,
+      "spec": 0.935,
+      "support": 75,
+      "weight": 0.7
+    },
+    "manhole_overflow": {
+      "name": "manhole_overflow",
+      "p": 0.85,
+      "r": 0.765,
+      "f1": 0.805,
+      "spec": 0.948,
+      "support": 80,
+      "weight": 0.9
+    }
+  },
+  "responding_department": "Municipal Corporation Drainage Department"
+}

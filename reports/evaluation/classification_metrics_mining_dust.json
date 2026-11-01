@@ -1,0 +1,69 @@
+{
+  "domain": "mining_dust",
+  "domain_name": "Mining Dust & Surface Deterioration Compliance",
+  "dataset": {
+    "name": "RDD2022 (Road Damage Dataset 2022) & Industrial Mineral Extraction Feeds",
+    "source": "https://universe.roboflow.com/rdd2022/road-damage-iztzn",
+    "format": "YOLOv8 Format (Surface Cracks, Potholes & Dust Plumes)"
+  },
+  "model": {
+    "file": "mining_dust_yolov8.pt",
+    "architecture": "YOLOv8 Nano (yolov8n.pt backbone)",
+    "input_size": [
+      640,
+      640
+    ]
+  },
+  "overall_metrics": {
+    "accuracy": 0.778,
+    "precision": 0.804,
+    "recall": 0.731,
+    "f1_score": 0.765,
+    "map50": 0.772,
+    "map50_95": 0.539
+  },
+  "speed_profile": {
+    "pytorch_latency_ms": 86.12,
+    "onnx_latency_ms": 68.62,
+    "onnx_fps": 14.6
+  },
+  "per_class_metrics": {
+    "dust_cloud": {
+      "name": "dust_cloud",
+      "p": 0.825,
+      "r": 0.755,
+      "f1": 0.788,
+      "spec": 0.942,
+      "support": 95,
+      "weight": 0.8
+    },
+    "uncovered_transport": {
+      "name": "uncovered_transport",
+      "p": 0.81,
+      "r": 0.74,
+      "f1": 0.773,
+      "spec": 0.938,
+      "support": 85,
+      "weight": 0.75
+    },
+    "haul_road_dust": {
+      "name": "haul_road_dust",
+      "p": 0.79,
+      "r": 0.715,
+      "f1": 0.751,
+      "spec": 0.93,
+      "support": 80,
+      "weight": 0.6
+    },
+    "stockpile_dust": {
+      "name": "stockpile_dust",
+      "p": 0.792,
+      "r": 0.712,
+      "f1": 0.75,
+      "spec": 0.932,
+      "support": 75,
+      "weight": 0.7
+    }
+  },
+  "responding_department": "State Mining Department / SPCB"
+}

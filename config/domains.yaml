@@ -1,0 +1,212 @@
+# Environmental Domain Configuration
+# Each domain maps to a YOLOv8 model, detection classes, severity rules, and responding department
+
+domains:
+
+  air_pollution:
+    name: "AQI & Air Pollution"
+    model_key: air_pollution
+    icon: "🏭"
+    classes:
+      - id: 0
+        name: industrial_smoke
+        severity_weight: 0.9
+        description: "Dense smoke from industrial stacks"
+      - id: 1
+        name: open_burning
+        severity_weight: 0.85
+        description: "Visible open fire or burning waste"
+      - id: 2
+        name: construction_dust
+        severity_weight: 0.6
+        description: "Dust cloud from construction activity"
+      - id: 3
+        name: road_dust
+        severity_weight: 0.4
+        description: "Suspended road dust"
+      - id: 4
+        name: vehicle_exhaust
+        severity_weight: 0.7
+        description: "Black/thick exhaust from vehicles"
+    external_data:
+      - type: aqi_api
+        parameter: pm2_5
+        unit: µg/m³
+    responding_department: "Delhi Pollution Control Committee (DPCC)"
+    datasets:
+      - name: D-Fire
+        url: https://github.com/gaiasd/DFireDataset
+        type: fire_smoke
+      - name: FASDD
+        url: https://huggingface.co/datasets/seawsurf/fire_smoke_dataset_fasdd_cv
+        type: fire_smoke
+    compliance_rules:
+      - rule: "Open burning within 5km of residential area is a violation"
+        threshold: 1
+        action: "Immediate FIR + department alert"
+
+  water_quality:
+    name: "Water Quality Monitoring"
+    model_key: water_quality
+    icon: "💧"
+    classes:
+      - id: 0
+        name: water_discoloration
+        severity_weight: 0.75
+        description: "Unusual color change in water body"
+      - id: 1
+        name: floating_waste
+        severity_weight: 0.7
+        description: "Plastic/solid waste floating on water"
+      - id: 2
+        name: oil_film
+        severity_weight: 0.85
+        description: "Oily iridescent film on water surface"
+      - id: 3
+        name: foam_accumulation
+        severity_weight: 0.6
+        description: "Foam or froth on water surface"
+      - id: 4
+        name: illegal_discharge_pipe
+        severity_weight: 0.95
+        description: "Pipe discharging into water body"
+    external_data:
+      - type: sensor
+        parameter: pH
+        unit: pH
+      - type: sensor
+        parameter: TDS
+        unit: mg/L
+      - type: sensor
+        parameter: turbidity
+        unit: NTU
+    responding_department: "Delhi Jal Board / Central Pollution Control Board"
+    datasets:
+      - name: Floating waste water Kaggle
+        url: https://www.kaggle.com/search?q=floating+waste+water
+        type: water_pollution
+    compliance_rules:
+      - rule: "Illegal discharge into water body is punishable under Water Act 1974"
+        threshold: 1
+        action: "Alert CPCB + Auto-generate FIR"
+
+  sewage_drainage:
+    name: "Sewage Overflow & Drainage"
+    model_key: sewage_drainage
+    icon: "🚰"
+    classes:
+      - id: 0
+        name: overflowing_drain
+        severity_weight: 0.85
+        description: "Drain visibly overflowing onto street"
+      - id: 1
+        name: sewage_accumulation
+        severity_weight: 0.8
+        description: "Standing sewage water on road/area"
+      - id: 2
+        name: blocked_drain
+        severity_weight: 0.65
+        description: "Drain blocked with waste/debris"
+      - id: 3
+        name: wastewater_leakage
+        severity_weight: 0.7
+        description: "Leakage from sewage pipe"
+      - id: 4
+        name: manhole_overflow
+        severity_weight: 0.9
+        description: "Manhole overflowing with sewage"
+    external_data:
+      - type: sensor
+        parameter: water_level
+        unit: meters
+    responding_department: "Municipal Corporation Drainage Department"
+    datasets:
+      - name: Sewer Defect Kaggle
+        url: https://www.kaggle.com/search?q=sewer+defect
+        type: infrastructure
+    compliance_rules:
+      - rule: "Sewage overflow in public area must be resolved within 24 hours"
+        threshold: 1
+        action: "Assign maintenance team + escalate if >24hrs"
+
+  mining_dust:
+    name: "Mining Dust & Industrial Compliance"
+    model_key: mining_dust
+    icon: "⛏️"
+    classes:
+      - id: 0
+        name: dust_cloud
+        severity_weight: 0.8
+        description: "Visible dust cloud around mining/quarry"
+      - id: 1
+        name: uncovered_transport
+        severity_weight: 0.75
+        description: "Uncovered mineral-loaded vehicle"
+      - id: 2
+        name: haul_road_dust
+        severity_weight: 0.6
+        description: "Dust from unpaved haul roads"
+      - id: 3
+        name: stockpile_dust
+        severity_weight: 0.7
+        description: "Dust rising from mineral stockpiles"
+    external_data:
+      - type: sensor
+        parameter: PM10
+        unit: µg/m³
+      - type: geospatial
+        parameter: mining_zone_boundary
+    responding_department: "State Mining Department / SPCB"
+    datasets:
+      - name: RDD2022 HuggingFace
+        url: https://huggingface.co/datasets/dronefreak/RDD2022
+        type: road_environment
+      - name: RDD2022 Roboflow
+        url: https://universe.roboflow.com/rdd2022/road-damage-iztzn
+        type: road_damage
+    compliance_rules:
+      - rule: "All mineral transport vehicles must be covered as per MMDR Act"
+        threshold: 1
+        action: "Auto-generate violation notice to transport operator"
+
+  solid_waste:
+    name: "Solid Waste Management & Compliance"
+    model_key: solid_waste
+    icon: "🗑️"
+    classes:
+      - id: 0
+        name: illegal_dumping
+        severity_weight: 0.85
+        description: "Illegal garbage dumped in unauthorized area"
+      - id: 1
+        name: overflowing_dustbin
+        severity_weight: 0.65
+        description: "Municipal dustbin overflowing"
+      - id: 2
+        name: plastic_waste
+        severity_weight: 0.7
+        description: "Plastic waste scattered"
+      - id: 3
+        name: construction_debris
+        severity_weight: 0.6
+        description: "Construction C&D waste dumped illegally"
+      - id: 4
+        name: organic_waste
+        severity_weight: 0.5
+        description: "Decomposing organic waste"
+      - id: 5
+        name: mixed_waste_pile
+        severity_weight: 0.75
+        description: "Unsegregated waste pile"
+    external_data:
+      - type: municipal_rules
+        parameter: designated_dump_zones
+    responding_department: "Municipal Solid Waste Management Cell"
+    datasets:
+      - name: TACO Roboflow (YOLO)
+        url: https://universe.roboflow.com/asad-amicl/taco-trash-annotations-in-context-sbr60
+        type: trash_detection
+    compliance_rules:
+      - rule: "Illegal dumping is punishable under SWM Rules 2016"
+        threshold: 1
+        action: "GPS-tagged complaint + challan to zone officer"
