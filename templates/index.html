@@ -53,53 +53,81 @@
       <!-- Upload Card -->
       <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-6 shadow-xl backdrop-blur">
         <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-          <i class="fa-solid fa-cloud-arrow-up text-teal-400"></i>
+          <i class="fa-solid fa-camera-viewfinder text-teal-400"></i>
           Submit Environmental Inspection Image
         </h2>
-        <p class="text-xs text-slate-400 mb-5">
-          Upload an inspection photo or CCTV capture for real-time violation diagnosis.
+        <p class="text-xs text-slate-400 mb-4">
+          Upload an inspection photo or click live photo directly from your camera.
         </p>
 
-        <!-- Mode Switcher Tabs: Upload vs Camera -->
-        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-xl mb-4 text-xs font-semibold">
-          <button type="button" id="tabUploadBtn" class="py-2 px-3 rounded-lg bg-teal-600 text-white transition flex items-center justify-center gap-2 shadow">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Upload File
+        <!-- Prominent Dual Action Buttons: Upload vs Live Camera -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <button type="button" id="tabUploadBtn" class="py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg border border-teal-400/30">
+            <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+            <span>Upload File</span>
           </button>
-          <button type="button" id="tabCameraBtn" class="py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-camera"></i> Capture Photo
+          <button type="button" id="tabCameraBtn" class="py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-700 text-teal-300 font-bold text-xs transition flex items-center justify-center gap-2 border border-teal-500/40 shadow">
+            <i class="fa-solid fa-camera text-sm text-teal-400"></i>
+            <span>Capture Camera</span>
           </button>
         </div>
 
-        <!-- Dropzone (Mode 1: File Upload) -->
-        <div id="dropzone" class="border-2 border-dashed border-slate-600 hover:border-teal-400 rounded-xl p-6 text-center cursor-pointer transition bg-slate-900/50 hover:bg-slate-900/80">
-          <input type="file" id="fileInput" accept="image/*" class="hidden">
+        <!-- Hidden native inputs for maximum compatibility -->
+        <input type="file" id="fileInput" accept="image/*" class="hidden">
+        <input type="file" id="mobileCameraInput" accept="image/*" capture="environment" class="hidden">
+
+        <!-- Mode 1: File Dropzone -->
+        <div id="dropzone" class="border-2 border-dashed border-slate-600 hover:border-teal-400 rounded-xl p-5 text-center cursor-pointer transition bg-slate-900/50 hover:bg-slate-900/80">
           <div id="dropzonePrompt">
-            <i class="fa-solid fa-image text-4xl text-slate-500 mb-3 block"></i>
-            <p class="text-sm font-semibold text-slate-300">Click to upload or drag & drop</p>
-            <p class="text-xs text-slate-500 mt-1">Supports JPG, PNG, WebP (Max 20MB)</p>
+            <i class="fa-solid fa-images text-3xl text-slate-500 mb-2 block"></i>
+            <p class="text-sm font-semibold text-slate-300">Click to browse or drag & drop</p>
+            <p class="text-[11px] text-slate-500 mt-1">Supports JPG, PNG, WebP (Max 20MB)</p>
+            <div class="mt-3 flex items-center justify-center gap-2">
+              <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">or use camera button above</span>
+            </div>
           </div>
           <div id="previewContainer" class="hidden">
-            <img id="imagePreview" src="" alt="Selected Preview" class="max-h-48 mx-auto rounded-lg shadow-md border border-slate-700 object-cover">
+            <div class="relative inline-block">
+              <img id="imagePreview" src="" alt="Selected Preview" class="max-h-48 mx-auto rounded-lg shadow-md border border-slate-700 object-cover">
+              <span id="sourceBadge" class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/90 text-slate-900 shadow">
+                File
+              </span>
+            </div>
             <p id="fileName" class="text-xs text-teal-300 font-mono mt-2 truncate"></p>
+            <button type="button" id="changeImageBtn" class="mt-2 text-[11px] text-slate-400 hover:text-white underline">
+              Change Image / Re-take
+            </button>
           </div>
         </div>
 
-        <!-- Camera Container (Mode 2: Live Camera Capture) -->
-        <div id="cameraContainer" class="hidden border border-slate-700 rounded-xl p-4 bg-slate-900/80 text-center space-y-3">
-          <div class="relative bg-black rounded-lg overflow-hidden border border-slate-800 flex items-center justify-center min-h-[200px]">
-            <video id="cameraVideo" autoplay playsinline muted class="w-full max-h-56 object-cover rounded-lg"></video>
+        <!-- Mode 2: Live Camera Viewfinder Box -->
+        <div id="cameraContainer" class="hidden border border-teal-500/50 rounded-xl p-4 bg-slate-900/90 text-center space-y-3 shadow-inner">
+          <div class="flex items-center justify-between text-xs px-1">
+            <span class="text-rose-400 font-bold flex items-center gap-1.5 text-[11px]">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              LIVE CAMERA SENSOR
+            </span>
+            <button type="button" id="closeCameraBtn" class="text-slate-400 hover:text-white text-xs">
+              <i class="fa-solid fa-xmark mr-1"></i>Close
+            </button>
+          </div>
+
+          <div class="relative bg-black rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center min-h-[220px]">
+            <video id="cameraVideo" autoplay playsinline muted class="w-full max-h-60 object-cover rounded-lg"></video>
             <div id="cameraLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 text-xs text-slate-400 space-y-2">
               <i class="fa-solid fa-spinner animate-spin text-2xl text-teal-400"></i>
-              <span>Accessing Camera Stream...</span>
+              <span>Starting Live Camera...</span>
             </div>
           </div>
           <canvas id="cameraCanvas" class="hidden"></canvas>
-          <div class="flex items-center justify-center gap-2">
-            <button type="button" id="captureBtn" class="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center gap-2 shadow-lg transition">
-              <i class="fa-solid fa-circle-dot text-rose-400 animate-pulse"></i> Capture Snapshot
+
+          <div class="flex items-center justify-center gap-2 pt-1">
+            <button type="button" id="captureBtn" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition">
+              <i class="fa-solid fa-circle-dot text-sm"></i>
+              <span>Click Photo / Snapshot</span>
             </button>
-            <button type="button" id="switchCameraBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 px-3 rounded-xl text-xs border border-slate-700 transition" title="Flip / Switch Camera">
-              <i class="fa-solid fa-camera-rotate"></i>
+            <button type="button" id="switchCameraBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 px-3.5 rounded-xl text-xs border border-slate-700 transition" title="Flip Camera Front/Back">
+              <i class="fa-solid fa-camera-rotate text-sm"></i>
             </button>
           </div>
         </div>
@@ -459,6 +487,9 @@
     // Mode Switcher & Camera Variables
     const tabUploadBtn = document.getElementById("tabUploadBtn");
     const tabCameraBtn = document.getElementById("tabCameraBtn");
+    const closeCameraBtn = document.getElementById("closeCameraBtn");
+    const changeImageBtn = document.getElementById("changeImageBtn");
+    const sourceBadge = document.getElementById("sourceBadge");
     const cameraContainer = document.getElementById("cameraContainer");
     const cameraVideo = document.getElementById("cameraVideo");
     const cameraCanvas = document.getElementById("cameraCanvas");
@@ -468,18 +499,19 @@
 
     let cameraStream = null;
     let currentFacingMode = "environment"; // default to rear camera on mobile
+    let currentSource = "upload";
 
     function switchToUploadTab() {
       stopCamera();
-      tabUploadBtn.className = "py-2 px-3 rounded-lg bg-teal-600 text-white transition flex items-center justify-center gap-2 shadow";
-      tabCameraBtn.className = "py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-2";
+      tabUploadBtn.className = "py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg border border-teal-400/30";
+      tabCameraBtn.className = "py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-700 text-teal-300 font-bold text-xs transition flex items-center justify-center gap-2 border border-teal-500/40 shadow";
       dropzone.classList.remove("hidden");
       cameraContainer.classList.add("hidden");
     }
 
     function switchToCameraTab() {
-      tabCameraBtn.className = "py-2 px-3 rounded-lg bg-teal-600 text-white transition flex items-center justify-center gap-2 shadow";
-      tabUploadBtn.className = "py-2 px-3 rounded-lg text-slate-400 hover:text-white transition flex items-center justify-center gap-2";
+      tabCameraBtn.className = "py-2.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg border border-teal-400/30";
+      tabUploadBtn.className = "py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-700 text-slate-300 font-bold text-xs transition flex items-center justify-center gap-2 border border-slate-700 shadow";
       dropzone.classList.add("hidden");
       cameraContainer.classList.remove("hidden");
       startCamera();
@@ -505,8 +537,8 @@
         console.error("Camera access failed:", err);
         cameraLoading.innerHTML = `
           <i class="fa-solid fa-triangle-exclamation text-2xl text-rose-400 mb-1"></i>
-          <span class="text-rose-300 font-semibold">Camera Access Blocked</span>
-          <span class="text-[10px] text-slate-400 max-w-xs">Please allow camera permissions in your browser or use File Upload.</span>
+          <span class="text-rose-300 font-semibold text-xs">Camera Access Blocked</span>
+          <span class="text-[10px] text-slate-400 max-w-xs mt-1">Please allow camera permission in browser settings or upload from device.</span>
         `;
       }
     }
@@ -523,6 +555,7 @@
 
     tabUploadBtn.addEventListener("click", switchToUploadTab);
     tabCameraBtn.addEventListener("click", switchToCameraTab);
+    if (closeCameraBtn) closeCameraBtn.addEventListener("click", switchToUploadTab);
 
     switchCameraBtn.addEventListener("click", () => {
       currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
@@ -543,13 +576,28 @@
         if (!blob) return;
         const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
         const file = new File([blob], `camera_snapshot_${stamp}.jpg`, { type: "image/jpeg" });
+        currentSource = "camera";
         switchToUploadTab();
-        handleFileSelect(file);
+        handleFileSelect(file, "camera");
       }, "image/jpeg", 0.95);
     });
 
     // File selection UI
-    dropzone.addEventListener("click", () => fileInput.click());
+    dropzone.addEventListener("click", (e) => {
+      if (e.target && e.target.id === "changeImageBtn") return;
+      fileInput.click();
+    });
+
+    if (changeImageBtn) {
+      changeImageBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        currentFile = null;
+        fileInput.value = "";
+        previewContainer.classList.add("hidden");
+        dropzonePrompt.classList.remove("hidden");
+      });
+    }
+
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       dropzone.classList.add("border-teal-400", "bg-slate-900/80");
@@ -561,18 +609,27 @@
       e.preventDefault();
       dropzone.classList.remove("border-teal-400", "bg-slate-900/80");
       if (e.dataTransfer.files.length > 0) {
-        handleFileSelect(e.dataTransfer.files[0]);
+        currentSource = "upload";
+        handleFileSelect(e.dataTransfer.files[0], "upload");
       }
     });
     fileInput.addEventListener("change", (e) => {
       if (e.target.files.length > 0) {
-        handleFileSelect(e.target.files[0]);
+        currentSource = "upload";
+        handleFileSelect(e.target.files[0], "upload");
       }
     });
 
-    function handleFileSelect(file) {
+    function handleFileSelect(file, source = "upload") {
       currentFile = file;
+      currentSource = source;
       fileName.innerText = file.name;
+      if (sourceBadge) {
+        sourceBadge.innerText = source === "camera" ? "Camera" : "File";
+        sourceBadge.className = source === "camera"
+          ? "absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white shadow"
+          : "absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/90 text-slate-900 shadow";
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         imagePreview.src = e.target.result;
@@ -639,6 +696,7 @@
 
       const formData = new FormData();
       formData.append("file", currentFile);
+      formData.append("source", currentSource || "upload");
       const domainVal = document.getElementById("domainSelect").value;
       if (domainVal) formData.append("domain", domainVal);
       const latVal = document.getElementById("latInput").value;
@@ -692,7 +750,8 @@
       const domain = data.domain || "solid_waste";
       const domainLabel = data.domain_label || domain.replace("_", " ").toUpperCase();
       document.getElementById("resDomainBadge").innerText = domainLabel;
-      document.getElementById("resTimestamp").innerText = "Incident ID: " + (data.incident_id || "N/A") + " • Analyzed: " + new Date().toLocaleTimeString();
+      const capSource = data.capture_source || (currentSource === "camera" ? "Live Camera" : "Upload");
+      document.getElementById("resTimestamp").innerText = "Incident ID: " + (data.incident_id || "N/A") + " • Source: " + capSource + " • Analyzed: " + new Date().toLocaleTimeString();
 
       const objects = data.detections || [];
       if (objects.length > 0) {

@@ -31,6 +31,7 @@ def create_app() -> Flask:
     # Config
     app.config["SECRET_KEY"] = FLASK_CONFIG.get("SECRET_KEY", "dev-secret")
     app.config["DEBUG"] = FLASK_CONFIG.get("DEBUG", False)
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.config["MAX_CONTENT_LENGTH"] = FLASK_CONFIG.get("MAX_CONTENT_LENGTH", 20 * 1024 * 1024)
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

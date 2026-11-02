@@ -57,3 +57,10 @@ def test_analyze_image_blocked_without_key(client):
     assert res.status_code == 401
     assert res.get_json()["error"] == "Unauthorized"
 
+
+def test_capture_camera_endpoint_exists(client):
+    """Should expose POST /api/capture-camera and require API Key."""
+    res = client.post("/api/capture-camera", json={"domain": "solid_waste"})
+    assert res.status_code == 401
+    assert res.get_json()["error"] == "Unauthorized"
+

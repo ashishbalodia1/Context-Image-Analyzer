@@ -6,6 +6,7 @@ Severity Assessment -> Context Synthesis -> Storage.
 """
 import os
 import uuid
+import base64
 from pathlib import Path
 from flask import Blueprint, request, jsonify
 
@@ -47,47 +48,69 @@ def verify_key():
 
 @upload_bp.route("/analyze-image", methods=["POST"])
 @upload_bp.route("/upload", methods=["POST"])
+@upload_bp.route("/capture-camera", methods=["POST"])
 @require_api_key
 def analyze_image():
     """
-    POST /api/analyze-image (or /api/upload)
-
-    Multipart Form-Data:
-        file: Image binary (JPG, PNG, WebP) - Required
-        latitude: float - Optional manual GPS override
-        longitude: float - Optional manual GPS override
-        timestamp: string - Optional capture timestamp
-        domain: string - Optional environmental domain
-        description: string - Optional citizen notes
-
-    Returns:
-        JSON: Structured incident report (Section 9 Specification)
+    POST /api/analyze-image (or /api/capture-camera)
+    Supports both Multipart Form-Data (file upload or camera snapshot)
+    and JSON body (with base64 encoded camera frame).
     """
-    file = request.files.get("file") or request.files.get("image")
-    if not file:
-        return jsonify({"error": "No file part in request. Provide an image under key 'image' or 'file'."}), 400
+    save_path = None
+    source_type = "upload"
 
-    if file.filename == "":
-        return jsonify({"error": "No file selected."}), 400
+    # A. Check for JSON Payload (Direct Base64 from Camera/Webcam Canvas)
+    if request.is_json:
+        json_data = request.get_json() or {}
+        b64_data = json_data.get("image_base64") or json_data.get("camera_base64") or json_data.get("image")
+        if not b64_data:
+            return jsonify({"error": "No image data provided. Pass 'image_base64' in JSON body or 'file' in multipart form."}), 400
 
-    if not _allowed_file(file.filename):
-        return jsonify({"error": f"Unsupported file type. Allowed: {sorted(list(ALLOWED_EXTENSIONS))}"}), 400
+        source_type = json_data.get("source", "camera")
+        if "," in b64_data:
+            b64_data = b64_data.split(",", 1)[1]
 
-    # 1. Secure file upload
-    ext = file.filename.rsplit(".", 1)[1].lower()
-    unique_name = f"{uuid.uuid4().hex}.{ext}"
-    os.makedirs(str(UPLOAD_DIR), exist_ok=True)
-    save_path = str(UPLOAD_DIR / unique_name)
-    file.save(save_path)
-    logger.info(f"File uploaded securely: {save_path}")
+        unique_name = f"camera_{uuid.uuid4().hex}.jpg"
+        os.makedirs(str(UPLOAD_DIR), exist_ok=True)
+        save_path = str(UPLOAD_DIR / unique_name)
+        try:
+            with open(save_path, "wb") as fh:
+                fh.write(base64.b64decode(b64_data))
+            logger.info(f"Live camera frame decoded and saved securely: {save_path}")
+        except Exception as e:
+            return jsonify({"error": f"Invalid base64 camera image: {str(e)}"}), 400
 
-    # 2. Extract query parameters
-    domain = request.form.get("domain")
-    citizen_desc = request.form.get("description")
+        domain = json_data.get("domain")
+        citizen_desc = json_data.get("description")
+        lat_raw = json_data.get("latitude") or json_data.get("lat")
+        lon_raw = json_data.get("longitude") or json_data.get("lon")
+        req_timestamp = json_data.get("timestamp")
 
-    manual_location = None
-    lat_raw = request.form.get("latitude") or request.form.get("lat")
-    lon_raw = request.form.get("longitude") or request.form.get("lon")
+    # B. Multipart Form-Data (File Upload or Camera Snapshot Blob)
+    else:
+        file = request.files.get("file") or request.files.get("image") or request.files.get("camera")
+        if not file:
+            return jsonify({"error": "No file part in request. Provide an image under key 'image', 'file', or 'camera'."}), 400
+
+        if file.filename == "":
+            return jsonify({"error": "No file selected."}), 400
+
+        if not _allowed_file(file.filename):
+            return jsonify({"error": f"Unsupported file type. Allowed: {sorted(list(ALLOWED_EXTENSIONS))}"}), 400
+
+        source_type = request.form.get("source", "upload")
+        ext = file.filename.rsplit(".", 1)[1].lower()
+        unique_name = f"{'camera_' if source_type == 'camera' else ''}{uuid.uuid4().hex}.{ext}"
+        os.makedirs(str(UPLOAD_DIR), exist_ok=True)
+        save_path = str(UPLOAD_DIR / unique_name)
+        file.save(save_path)
+        logger.info(f"File/Camera image saved securely: {save_path}")
+
+        domain = request.form.get("domain")
+        citizen_desc = request.form.get("description")
+        lat_raw = request.form.get("latitude") or request.form.get("lat")
+        lon_raw = request.form.get("longitude") or request.form.get("lon")
+        req_timestamp = request.form.get("timestamp")
     if lat_raw and lon_raw:
         try:
             lat = float(lat_raw)
@@ -148,6 +171,7 @@ def analyze_image():
         image_metadata=image_metadata,
         citizen_description=citizen_desc
     )
+    report["capture_source"] = "Live Camera Snapshot" if source_type == "camera" else "Inspection File Upload"
 
     # 7b. Attach selected domain's dataset evaluation & benchmark metrics
     domain_key = detection_result.get("domain", "solid_waste")
