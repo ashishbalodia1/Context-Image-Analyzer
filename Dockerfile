@@ -37,3 +37,4 @@ EXPOSE 10000
 
 # Launch with Gunicorn (1 worker + 4 threads for memory efficiency on free tier)
 CMD ["gunicorn", "backend.app:app", "--bind", "0.0.0.0:10000", "--workers", "1", "--threads", "4", "--timeout", "120"]
+

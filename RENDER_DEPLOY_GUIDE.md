@@ -38,3 +38,4 @@ If you prefer a 100% containerized deployment:
 - **Headless OpenCV (`opencv-python-headless`):** Completely eliminates `libGL.so.1` missing errors common on headless Linux servers.
 - **Gunicorn Workers & Threads:** Configured with 1 worker and 4 threads to keep RAM usage within Render's 512 MB free tier while maintaining high concurrency.
 - **All 5 Fine-Tuned YOLOv8 Models:** Pre-bundled in `models/trained/`, requiring zero external download during deployment.
+

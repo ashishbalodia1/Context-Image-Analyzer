@@ -4,7 +4,33 @@ This document provides the complete API specification for the **City Guardian En
 
 - **Base URLs**: `/api` and `/api/v1`
 - **Supported Formats**: JSON, Multipart Form-Data
-- **Security**: CORS enabled for mobile clients & web dashboards
+- **Security**: API Key Authentication (`X-API-Key` or `Authorization: Bearer <key>`)
+
+---
+
+## 🔑 Authentication
+
+All ML inference and write endpoints require a valid **City Guardian API Key**.
+
+### Supported Authentication Methods:
+1. **Custom Header (Recommended):**
+   ```http
+   X-API-Key: cg_live_cityguardian_2026
+   ```
+2. **Standard Bearer Token:**
+   ```http
+   Authorization: Bearer cg_live_cityguardian_2026
+   ```
+3. **Query Parameter (Testing / Webhooks):**
+   ```http
+   POST /api/analyze-image?api_key=cg_live_cityguardian_2026
+   ```
+
+### Key Verification Endpoint:
+```http
+GET /api/verify-key
+```
+Returns `200 OK` if the key is active, or `401 Unauthorized` / `403 Forbidden` if missing or invalid.
 
 ---
 

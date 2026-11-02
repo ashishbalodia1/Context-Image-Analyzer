@@ -15,3 +15,4 @@ echo "===> Ensuring upload directories exist..."
 mkdir -p data/uploads/annotated
 
 echo "===> Render build completed successfully!"
+

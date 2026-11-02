@@ -16,6 +16,9 @@ DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 UPLOAD_DIR = DATA_DIR / "uploads"
 
+# ─── Security & Authentication ───────────────────────────────────────────────
+CITY_GUARDIAN_API_KEY = os.getenv("CITY_GUARDIAN_API_KEY", "cg_live_cityguardian_2026")
+
 # ─── Flask ───────────────────────────────────────────────────────────────────
 FLASK_CONFIG = {
     "SECRET_KEY": os.getenv("SECRET_KEY", "dev-secret-key"),

@@ -16,6 +16,7 @@ from src.context_engine.severity_assessor import SeverityAssessor
 from src.context_engine.report_generator import ReportGenerator
 from src.context_engine.external_apis import fetch_aqi_data
 from src.utils.logger import get_logger
+from backend.middleware.auth import require_api_key
 
 logger = get_logger(__name__)
 upload_bp = Blueprint("upload", __name__)
@@ -34,8 +35,19 @@ def _allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+@upload_bp.route("/verify-key", methods=["GET"])
+@require_api_key
+def verify_key():
+    """GET /api/verify-key - Checks if the client's API Key is valid."""
+    return jsonify({
+        "status": "authenticated",
+        "message": "API Key is valid. Access granted to City Guardian Environmental Intelligence Pipeline."
+    }), 200
+
+
 @upload_bp.route("/analyze-image", methods=["POST"])
 @upload_bp.route("/upload", methods=["POST"])
+@require_api_key
 def analyze_image():
     """
     POST /api/analyze-image (or /api/upload)
