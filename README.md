@@ -1,5 +1,6 @@
 # 🌍 CITY GUARDIAN — Geo-Aware AI Environmental Intelligence & Compliance Monitoring System
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ashishbalodia1/Context-Image-Analyzer)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://python.org)
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics%208.4-brightgreen.svg)](https://ultralytics.com)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX%20Runtime-1.31-orange.svg)](https://onnxruntime.ai)
