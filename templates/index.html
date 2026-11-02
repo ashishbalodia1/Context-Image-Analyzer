@@ -100,31 +100,93 @@
           </div>
         </div>
 
-        <!-- Mode 2: Live Camera Viewfinder Box -->
-        <div id="cameraContainer" class="hidden border border-teal-500/50 rounded-xl p-4 bg-slate-900/90 text-center space-y-3 shadow-inner">
+        <!-- Mode 2: Live Camera Viewfinder Box with AI Grid & Auto-Capture -->
+        <div id="cameraContainer" class="hidden border border-teal-500/50 rounded-xl p-4 bg-slate-900/95 text-center space-y-3 shadow-2xl">
+          <!-- Top Bar -->
           <div class="flex items-center justify-between text-xs px-1">
-            <span class="text-rose-400 font-bold flex items-center gap-1.5 text-[11px]">
-              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-              LIVE CAMERA SENSOR
-            </span>
-            <button type="button" id="closeCameraBtn" class="text-slate-400 hover:text-white text-xs">
+            <div class="flex items-center gap-2">
+              <span class="text-rose-400 font-bold flex items-center gap-1.5 text-[11px]">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                LIVE SENSOR
+              </span>
+              <!-- Auto-Capture Mode Switch -->
+              <button type="button" id="toggleAutoCaptureBtn" class="bg-teal-500/20 border border-teal-400/50 text-teal-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 hover:bg-teal-500/30 transition">
+                <i class="fa-solid fa-bolt text-amber-300"></i>
+                <span id="autoCaptureLabel">Auto-Capture: ON</span>
+              </button>
+            </div>
+            <button type="button" id="closeCameraBtn" class="text-slate-400 hover:text-white text-xs bg-slate-800/80 px-2 py-1 rounded-md border border-slate-700">
               <i class="fa-solid fa-xmark mr-1"></i>Close
             </button>
           </div>
 
-          <div class="relative bg-black rounded-lg overflow-hidden border border-slate-700 flex items-center justify-center min-h-[220px]">
-            <video id="cameraVideo" autoplay playsinline muted class="w-full max-h-60 object-cover rounded-lg"></video>
-            <div id="cameraLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 text-xs text-slate-400 space-y-2">
+          <!-- Video Viewport with Rule-of-Thirds Targeting Grid -->
+          <div id="viewfinderViewport" class="relative bg-black rounded-xl overflow-hidden border-2 border-slate-700 flex items-center justify-center min-h-[240px] shadow-inner">
+            <video id="cameraVideo" autoplay playsinline muted class="w-full max-h-64 object-cover rounded-xl"></video>
+            
+            <!-- White Flash Overlay on Snapshot -->
+            <div id="cameraFlash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-150 z-30"></div>
+
+            <!-- Loading Spinner -->
+            <div id="cameraLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 text-xs text-slate-400 space-y-2 z-20">
               <i class="fa-solid fa-spinner animate-spin text-2xl text-teal-400"></i>
-              <span>Starting Live Camera...</span>
+              <span>Accessing Camera Stream...</span>
+            </div>
+
+            <!-- AI Targeting HUD & Alignment Grid -->
+            <div id="viewfinderGrid" class="absolute inset-0 pointer-events-none flex flex-col justify-between p-3 z-10">
+              <!-- Top HUD Status -->
+              <div class="flex items-center justify-between text-[10px] font-mono">
+                <span id="scanStatusBadge" class="bg-slate-900/80 backdrop-blur border border-teal-500/40 text-teal-300 px-2 py-0.5 rounded-md flex items-center gap-1.5 shadow">
+                  <span id="scanDot" class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                  <span id="scanStatusText">Scanning frame for garbage...</span>
+                </span>
+                <span class="bg-slate-900/80 backdrop-blur border border-slate-700 text-slate-300 px-2 py-0.5 rounded">
+                  3×3 Alignment Grid
+                </span>
+              </div>
+
+              <!-- Rule of Thirds 3x3 Grid Overlay -->
+              <div class="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none z-0">
+                <div class="border-r border-b border-white/20"></div>
+                <div class="border-r border-b border-white/20"></div>
+                <div class="border-b border-white/20"></div>
+                <div class="border-r border-b border-white/20"></div>
+                <div class="border-r border-b border-white/20 relative flex items-center justify-center">
+                  <!-- Central Target Crosshair -->
+                  <div id="centerReticle" class="w-14 h-14 border-2 border-teal-400/70 rounded-full flex items-center justify-center transition-all duration-300">
+                    <div class="w-2 h-2 rounded-full bg-teal-400"></div>
+                  </div>
+                </div>
+                <div class="border-b border-white/20"></div>
+                <div class="border-r border-white/20"></div>
+                <div class="border-r border-white/20"></div>
+                <div></div>
+              </div>
+
+              <!-- 4 Viewfinder Corner Brackets -->
+              <div class="absolute top-2 left-2 w-5 h-5 border-t-2 border-l-2 border-teal-400 z-10 pointer-events-none"></div>
+              <div class="absolute top-2 right-2 w-5 h-5 border-t-2 border-r-2 border-teal-400 z-10 pointer-events-none"></div>
+              <div class="absolute bottom-2 left-2 w-5 h-5 border-b-2 border-l-2 border-teal-400 z-10 pointer-events-none"></div>
+              <div class="absolute bottom-2 right-2 w-5 h-5 border-b-2 border-r-2 border-teal-400 z-10 pointer-events-none"></div>
+
+              <!-- Bottom Garbage Alert Banner -->
+              <div id="autoCaptureAlert" class="hidden z-20 bg-emerald-500/95 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs shadow-2xl flex items-center justify-between animate-bounce">
+                <span class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-bullseye text-sm"></i>
+                  <span id="detectedViolationText">Garbage Identified in Grid! Auto-Capturing...</span>
+                </span>
+                <span id="autoCountdown" class="font-mono text-xs bg-slate-900 text-emerald-300 px-2 py-0.5 rounded border border-slate-700">SNAP!</span>
+              </div>
             </div>
           </div>
           <canvas id="cameraCanvas" class="hidden"></canvas>
 
+          <!-- Action Buttons -->
           <div class="flex items-center justify-center gap-2 pt-1">
             <button type="button" id="captureBtn" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center gap-2 shadow-lg transition">
-              <i class="fa-solid fa-circle-dot text-sm"></i>
-              <span>Click Photo / Snapshot</span>
+              <i class="fa-solid fa-camera text-sm"></i>
+              <span>Click Snapshot Manually</span>
             </button>
             <button type="button" id="switchCameraBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 px-3.5 rounded-xl text-xs border border-slate-700 transition" title="Flip Camera Front/Back">
               <i class="fa-solid fa-camera-rotate text-sm"></i>
@@ -484,7 +546,7 @@
     // Initialize with default
     updateActiveDatasetInfo(domainSelect.value);
 
-    // Mode Switcher & Camera Variables
+    // Mode Switcher, Camera & Auto-Capture Variables
     const tabUploadBtn = document.getElementById("tabUploadBtn");
     const tabCameraBtn = document.getElementById("tabCameraBtn");
     const closeCameraBtn = document.getElementById("closeCameraBtn");
@@ -496,10 +558,24 @@
     const cameraLoading = document.getElementById("cameraLoading");
     const captureBtn = document.getElementById("captureBtn");
     const switchCameraBtn = document.getElementById("switchCameraBtn");
+    const toggleAutoCaptureBtn = document.getElementById("toggleAutoCaptureBtn");
+    const autoCaptureLabel = document.getElementById("autoCaptureLabel");
+    const scanStatusBadge = document.getElementById("scanStatusBadge");
+    const scanStatusText = document.getElementById("scanStatusText");
+    const scanDot = document.getElementById("scanDot");
+    const centerReticle = document.getElementById("centerReticle");
+    const autoCaptureAlert = document.getElementById("autoCaptureAlert");
+    const detectedViolationText = document.getElementById("detectedViolationText");
+    const autoCountdown = document.getElementById("autoCountdown");
+    const cameraFlash = document.getElementById("cameraFlash");
 
     let cameraStream = null;
     let currentFacingMode = "environment"; // default to rear camera on mobile
     let currentSource = "upload";
+    let autoCaptureEnabled = true;
+    let scanIntervalId = null;
+    let isAnalyzingFrame = false;
+    let autoCaptureTriggered = false;
 
     function switchToUploadTab() {
       stopCamera();
@@ -519,6 +595,8 @@
 
     async function startCamera() {
       stopCamera();
+      autoCaptureTriggered = false;
+      resetScannerHUD();
       cameraLoading.classList.remove("hidden");
       try {
         const constraints = {
@@ -533,6 +611,11 @@
         cameraVideo.srcObject = cameraStream;
         await cameraVideo.play();
         cameraLoading.classList.add("hidden");
+
+        // Start Auto-Detection loop if enabled
+        if (autoCaptureEnabled) {
+          startAutoDetectionLoop();
+        }
       } catch (err) {
         console.error("Camera access failed:", err);
         cameraLoading.innerHTML = `
@@ -544,6 +627,7 @@
     }
 
     function stopCamera() {
+      stopAutoDetectionLoop();
       if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
@@ -551,6 +635,156 @@
       if (cameraVideo) {
         cameraVideo.srcObject = null;
       }
+      resetScannerHUD();
+    }
+
+    function resetScannerHUD() {
+      if (scanStatusBadge) {
+        scanStatusBadge.className = "bg-slate-900/80 backdrop-blur border border-teal-500/40 text-teal-300 px-2 py-0.5 rounded-md flex items-center gap-1.5 shadow";
+      }
+      if (scanStatusText) {
+        scanStatusText.innerText = autoCaptureEnabled ? "Scanning grid for garbage..." : "Auto-Capture Paused (Manual Mode)";
+      }
+      if (scanDot) {
+        scanDot.className = "w-1.5 h-1.5 rounded-full " + (autoCaptureEnabled ? "bg-teal-400 animate-pulse" : "bg-slate-500");
+      }
+      if (centerReticle) {
+        centerReticle.className = "w-14 h-14 border-2 border-teal-400/70 rounded-full flex items-center justify-center transition-all duration-300";
+      }
+      if (autoCaptureAlert) {
+        autoCaptureAlert.classList.add("hidden");
+      }
+    }
+
+    // Toggle Auto-Capture ON/OFF
+    toggleAutoCaptureBtn.addEventListener("click", () => {
+      autoCaptureEnabled = !autoCaptureEnabled;
+      if (autoCaptureEnabled) {
+        autoCaptureLabel.innerText = "Auto-Capture: ON";
+        toggleAutoCaptureBtn.className = "bg-teal-500/20 border border-teal-400/50 text-teal-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 hover:bg-teal-500/30 transition";
+        if (cameraStream) startAutoDetectionLoop();
+      } else {
+        autoCaptureLabel.innerText = "Auto-Capture: OFF";
+        toggleAutoCaptureBtn.className = "bg-slate-800 border border-slate-700 text-slate-400 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 hover:bg-slate-700 transition";
+        stopAutoDetectionLoop();
+      }
+      resetScannerHUD();
+    });
+
+    function startAutoDetectionLoop() {
+      stopAutoDetectionLoop();
+      autoCaptureTriggered = false;
+      scanIntervalId = setInterval(checkFrameForGarbage, 1200);
+    }
+
+    function stopAutoDetectionLoop() {
+      if (scanIntervalId) {
+        clearInterval(scanIntervalId);
+        scanIntervalId = null;
+      }
+      isAnalyzingFrame = false;
+    }
+
+    // AI Scanner: checks if garbage appears in front of the camera
+    async function checkFrameForGarbage() {
+      if (!cameraStream || isAnalyzingFrame || autoCaptureTriggered || !cameraVideo.videoWidth) {
+        return;
+      }
+      isAnalyzingFrame = true;
+
+      try {
+        // Render downscaled preview frame for fast inference
+        cameraCanvas.width = 480;
+        cameraCanvas.height = 360;
+        const ctx = cameraCanvas.getContext("2d");
+        ctx.drawImage(cameraVideo, 0, 0, 480, 360);
+
+        const b64Data = cameraCanvas.toDataURL("image/jpeg", 0.75);
+        const domainVal = document.getElementById("domainSelect").value || "solid_waste";
+        const clientKey = apiKeyInput.value.trim();
+
+        const headers = { "Content-Type": "application/json" };
+        if (clientKey) headers["X-API-Key"] = clientKey;
+
+        const res = await fetch("/api/capture-camera", {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            image_base64: b64Data,
+            domain: domainVal,
+            source: "camera"
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const detections = data.detections || [];
+          
+          // Check if any garbage or environmental violation was detected
+          if (detections.length > 0 && !autoCaptureTriggered) {
+            const topDet = detections[0];
+            const className = topDet.class_name || topDet.class || "Garbage";
+            const conf = Math.round((topDet.confidence || 0.8) * 100);
+
+            // Trigger Auto-Capture!
+            autoCaptureTriggered = true;
+            stopAutoDetectionLoop();
+
+            // Visual feedback on HUD
+            centerReticle.className = "w-16 h-16 border-4 border-emerald-400 rounded-full flex items-center justify-center scale-110 shadow-[0_0_25px_rgba(52,211,153,0.9)] transition-all duration-200";
+            scanStatusBadge.className = "bg-emerald-600 text-white border border-emerald-400 px-2 py-0.5 rounded-md flex items-center gap-1.5 shadow font-bold";
+            scanStatusText.innerText = `🎯 TARGET LOCKED: ${className.toUpperCase()} (${conf}%)`;
+            detectedViolationText.innerText = `Garbage Identified (${className})! Auto-Capturing...`;
+            autoCaptureAlert.classList.remove("hidden");
+
+            // Countdown & Flash
+            let count = 1;
+            autoCountdown.innerText = count + "s";
+            const timer = setInterval(() => {
+              count--;
+              if (count <= 0) {
+                clearInterval(timer);
+                executeCameraSnapshot(data);
+              } else {
+                autoCountdown.innerText = count + "s";
+              }
+            }, 600);
+          }
+        }
+      } catch (err) {
+        console.warn("Auto-scanner ping:", err);
+      } finally {
+        isAnalyzingFrame = false;
+      }
+    }
+
+    // Capture full-res snapshot and auto-render report
+    function executeCameraSnapshot(precomputedData = null) {
+      if (!cameraStream || !cameraVideo.videoWidth) return;
+
+      // Trigger white flash animation
+      cameraFlash.style.opacity = "0.9";
+      setTimeout(() => { cameraFlash.style.opacity = "0"; }, 150);
+
+      cameraCanvas.width = cameraVideo.videoWidth;
+      cameraCanvas.height = cameraVideo.videoHeight;
+      const ctx = cameraCanvas.getContext("2d");
+      ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+
+      cameraCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+        const file = new File([blob], `auto_capture_garbage_${stamp}.jpg`, { type: "image/jpeg" });
+        currentSource = "camera";
+        stopCamera();
+        switchToUploadTab();
+        handleFileSelect(file, "camera");
+
+        // If auto-captured with already precomputed data, directly display report!
+        if (precomputedData) {
+          renderResults(precomputedData);
+        }
+      }, "image/jpeg", 0.95);
     }
 
     tabUploadBtn.addEventListener("click", switchToUploadTab);
@@ -562,24 +796,9 @@
       startCamera();
     });
 
+    // Manual Capture Button
     captureBtn.addEventListener("click", () => {
-      if (!cameraStream || !cameraVideo.videoWidth) {
-        alert("Camera stream is not ready yet. Please wait a moment.");
-        return;
-      }
-      cameraCanvas.width = cameraVideo.videoWidth;
-      cameraCanvas.height = cameraVideo.videoHeight;
-      const ctx = cameraCanvas.getContext("2d");
-      ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
-
-      cameraCanvas.toBlob((blob) => {
-        if (!blob) return;
-        const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-        const file = new File([blob], `camera_snapshot_${stamp}.jpg`, { type: "image/jpeg" });
-        currentSource = "camera";
-        switchToUploadTab();
-        handleFileSelect(file, "camera");
-      }, "image/jpeg", 0.95);
+      executeCameraSnapshot(null);
     });
 
     // File selection UI
