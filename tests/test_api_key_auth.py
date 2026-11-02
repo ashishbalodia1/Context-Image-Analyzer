@@ -56,3 +56,4 @@ def test_analyze_image_blocked_without_key(client):
     res = client.post("/api/analyze-image", data=data, content_type="multipart/form-data")
     assert res.status_code == 401
     assert res.get_json()["error"] == "Unauthorized"
+
